@@ -1,6 +1,7 @@
 //Imports
 
 const express = require('express');
+const userRouter = require('./authRoutes/userRouter');
 
 //Vars
 
@@ -11,6 +12,7 @@ const PORT = 8000;
 //Middleware
 
 server.use(express.json());
+server.use('/', userRouter);
 
 //Start server
 
