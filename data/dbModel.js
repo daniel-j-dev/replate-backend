@@ -70,6 +70,28 @@ const findBizPasswordByUsername = (username) => {
 	return db('businessAccounts').where({ username: username }).first();
 };
 
+//Pickup Request Crud
+
+const newPickupRequest = (obj) => {
+	return db('pickupRequests').insert(obj);
+};
+
+const findAllPickupRequests = () => {
+	return db('pickupRequests');
+};
+
+const findPickupById = (id) => {
+	return db('pickupRequests').where({ id: id }).first();
+};
+
+const updatePickupRequest = (id, obj) => {
+	return db('pickupRequests').where({ id: id }).update(obj);
+};
+
+const deletePickupRequest = (id) => {
+	return db('pickupRequests').where({id: id}).del()
+}
+
 module.exports = {
 	newVolunteerAccount,
 	findVolByUsername,
@@ -83,4 +105,9 @@ module.exports = {
 	updateVolunteer,
 	deleteBusinessAccount,
 	deleteVolunteerAccount,
+	newPickupRequest,
+	findAllPickupRequests,
+	updatePickupRequest,
+	findPickupById,
+	deletePickupRequest,
 };

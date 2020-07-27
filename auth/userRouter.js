@@ -5,7 +5,6 @@ const bcrypt = require('bcryptjs');
 const db = require('../data/dbModel.js');
 const jwt = require('jsonwebtoken');
 const secrets = require('./authUtils/secrets.js');
-
 const tokenAuth = require('./authUtils/tokenAuthentication.js');
 
 //Variables & Functions
