@@ -1,7 +1,7 @@
 //Imports
 
 const express = require('express');
-const userRouter = require('./authRoutes/userRouter');
+const userRouter = require('./auth/userRouter.js');
 
 //Vars
 
