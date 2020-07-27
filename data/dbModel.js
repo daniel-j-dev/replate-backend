@@ -40,6 +40,28 @@ const findAllBusinesses = () => {
 		.from('businessAccounts');
 };
 
+const updateBusiness = (currentUsername, obj) => {
+	return db('businessAccounts')
+		.where({ username: currentUsername })
+		.update(obj);
+};
+
+const updateVolunteer = (currentUsername, obj) => {
+	return db('volunteerAccounts')
+		.where({ username: currentUsername })
+		.update(obj);
+};
+
+//Dangerous reads - returns entries with hashed passwords
+
+const findVolPasswordByUsername = (username) => {
+	return db('volunteerAccounts').where({ username: username }).first();
+};
+
+const findBizPasswordByUsername = (username) => {
+	return db('businessAccounts').where({ username: username }).first();
+};
+
 module.exports = {
 	newVolunteerAccount,
 	findVolByUsername,
@@ -47,4 +69,8 @@ module.exports = {
 	newBusinessAccount,
 	findBizByUsername,
 	findAllBusinesses,
+	findVolPasswordByUsername,
+	findBizPasswordByUsername,
+	updateBusiness,
+	updateVolunteer,
 };
