@@ -1,4 +1,5 @@
 //Imports
+require('dotenv').config();
 
 const express = require('express');
 const userRouter = require('./auth/userRouter.js');
@@ -8,7 +9,7 @@ const pickupRequestsRouter = require('./auth/pickupRequestsRouter.js');
 
 const server = express();
 
-const PORT = 8000;
+const port = process.env.PORT;
 
 //Middleware
 
@@ -18,6 +19,6 @@ server.use('/pickup', pickupRequestsRouter);
 
 //Start server
 
-server.listen(PORT, () => {
-	console.log(`Server started on port ${PORT}`);
+server.listen(port, () => {
+	console.log(`Server started on port ${port}`);
 });
