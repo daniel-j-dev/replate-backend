@@ -28,6 +28,7 @@ exports.up = function (knex) {
 				.onUpdate('CASCADE')
 				.onDelete('CASCADE');
 			tbl.text('foodType').notNullable();
+			tbl.text('amount').notNullable();
 			tbl.datetime('preferredPickupTime', { precision: 6 }).notNullable();
 			tbl
 				.integer('volunteerAccountID')
