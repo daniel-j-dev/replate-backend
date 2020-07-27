@@ -5,7 +5,6 @@ const bcrypt = require('bcryptjs');
 const db = require('../data/dbModel.js');
 const jwt = require('jsonwebtoken');
 const secrets = require('./authUtils/secrets.js');
-
 const tokenAuth = require('./authUtils/tokenAuthentication.js');
 
 //Variables & Functions
@@ -17,6 +16,7 @@ let generateToken = (user) => {
 	const payload = {
 		userID: user.id,
 		username: user.username,
+		accountType: user.accountType,
 	};
 
 	const secret = secrets.jwtSecret;
@@ -30,9 +30,9 @@ let generateToken = (user) => {
 //Middleware
 
 router.use('/volunteer/', tokenAuth);
-router.use('/business/', tokenAuth)
+router.use('/business/', tokenAuth);
 
-//CRUD
+//Create
 
 router.post('/register', (req, res) => {
 	if (req.body.accountType === 'business') {
@@ -101,8 +101,10 @@ router.post('/register', (req, res) => {
 	}
 });
 
-router.get('/business/:id', (req, res) => {
-	db.findBizByUsername(req.params.id)
+//Read
+
+router.get('/business/:username', (req, res) => {
+	db.findBizByUsername(req.params.username)
 		.then((found) => {
 			if (found) {
 				res.status(200).json(found);
@@ -115,8 +117,8 @@ router.get('/business/:id', (req, res) => {
 		});
 });
 
-router.get('/volunteer/:id', (req, res) => {
-	db.findVolByUsername(req.params.id)
+router.get('/volunteer/:username', (req, res) => {
+	db.findVolByUsername(req.params.username)
 		.then((found) => {
 			if (found) {
 				res.status(200).json(found);
@@ -157,15 +159,143 @@ router.get('/business/', (req, res) => {
 		});
 });
 
+//Update
+
+router.put('/business/:username', (req, res) => {
+	if (req.body.password) {
+		let hashedPass = bcrypt.hashSync(req.body.password, 12);
+		if (
+			req.decodedToken.username === req.params.username &&
+			req.decodedToken.accountType === 'business'
+		) {
+			db.updateBusiness(req.decodedToken.username, {
+				...req.body,
+				password: hashedPass,
+			})
+				.then((returned) => {
+					res.json({ message: 'Account updated!' });
+				})
+				.catch((err) => {
+					res.status(500).json({ message: 'Server error', error: err });
+				});
+		} else {
+			res.status(401).json({
+				message: 'You do not have authorization to update this account.',
+			});
+		}
+	} else {
+		if (
+			req.decodedToken.username === req.params.username &&
+			req.decodedToken.accountType === 'business'
+		) {
+			db.updateBusiness(req.decodedToken.username, req.body)
+				.then((returned) => {
+					res.json({ message: 'Account updated!' });
+				})
+				.catch((err) => {
+					res.status(500).json({ message: 'Server error', error: err });
+				});
+		} else {
+			res.status(401).json({
+				message: 'You do not have authorization to update this account.',
+			});
+		}
+	}
+});
+
+router.put('/volunteer/:username', (req, res) => {
+	if (req.body.password) {
+		let hashedPass = bcrypt.hashSync(req.body.password, 12);
+		if (
+			req.decodedToken.username === req.params.username &&
+			req.decodedToken.accountType === 'volunteer'
+		) {
+			db.updateVolunteer(req.decodedToken.username, {
+				...req.body,
+				password: hashedPass,
+			})
+				.then((returned) => {
+					res.json({ message: 'Account updated!' });
+				})
+				.catch((err) => {
+					res.status(500).json({ message: 'Server error', error: err });
+				});
+		} else {
+			res.status(401).json({
+				message: 'You do not have authorization to update this account.',
+			});
+		}
+	} else {
+		if (
+			req.decodedToken.username === req.params.username &&
+			req.decodedToken.accountType === 'volunteer'
+		) {
+			db.updateVolunteer(req.decodedToken.username, req.body)
+				.then((returned) => {
+					res.json({ message: 'Account updated!' });
+				})
+				.catch((err) => {
+					res.status(500).json({ message: 'Server error', error: err });
+				});
+		} else {
+			res.status(401).json({
+				message: 'You do not have authorization to update this account.',
+			});
+		}
+	}
+});
+
+//Delete
+
+router.delete('/business/:username', (req, res) => {
+	if (
+		req.decodedToken.username === req.params.username &&
+		req.decodedToken.accountType === 'business'
+	) {
+		db.deleteBusinessAccount(req.decodedToken.username).then(returned => {
+			res.status(200).json({message: 'Account deleted.'});
+		}).catch(err => {
+			res.status(500).json({message: 'Server error', error: err});
+		});
+	} else {
+		res.status(401).json({
+			message: 'You do not have authorization to delete this account.',
+		});
+	}
+});
+
+router.delete('/volunteer/:username', (req, res) => {
+	if (
+		req.decodedToken.username === req.params.username &&
+		req.decodedToken.accountType === 'volunteer'
+	) {
+		db.deleteVolunteerAccount(req.decodedToken.username)
+			.then((returned) => {
+				res.status(200).json({ message: 'Account deleted.' });
+			})
+			.catch((err) => {
+				res.status(500).json({ message: 'Server error', error: err });
+			});
+	} else {
+		res.status(401).json({
+			message: 'You do not have authorization to delete this account.',
+		});
+	}
+});
+
 //Login
 
 router.post('/login', (req, res) => {
 	if (req.body.username && req.body.password) {
 		if (req.body.accountType === 'business') {
-			db.findBizByUsername(req.body.username)
+			db.findBizPasswordByUsername(req.body.username)
 				.then((found) => {
 					if (found && bcrypt.compareSync(req.body.password, found.password)) {
-						const token = generateToken(found);
+						const token = generateToken({
+							id: found.id,
+							username: found.username,
+							accountType: 'business',
+						});
 						res
 							.status(200)
 							.json({ message: 'Login successful!', token: token });
@@ -177,10 +307,14 @@ router.post('/login', (req, res) => {
 					res.status(500).json({ message: 'Server error', error: err });
 				});
 		} else if (req.body.accountType === 'volunteer') {
-			db.findVolByUsername(req.body.username)
+			db.findVolPasswordByUsername(req.body.username)
 				.then((found) => {
 					if (found && bcrypt.compareSync(req.body.password, found.password)) {
-						const token = generateToken(found);
+						const token = generateToken({
+							id: found.id,
+							username: found.username,
+							accountType: 'volunteer',
+						});
 						res
 							.status(200)
 							.json({ message: 'Login successful!', token: token });
@@ -200,7 +334,5 @@ router.post('/login', (req, res) => {
 		res.status(400).json({ message: 'Provide a username and password.' });
 	}
 });
-
-
 
 module.exports = router;
