@@ -92,7 +92,7 @@ router.put('/:id', (req, res) => {
 				.catch((err) => {
 					res.status(500).json({ message: 'Server error', error: err });
 				});
-		} else if (req.body.assign === false) {
+		} else if (req.body.assign === false) { //Add a check to see if they're even the assigned volunteer first
 			db.updatePickupRequest(req.params.id, {
 				volunteerAccountID: null,
 			})
