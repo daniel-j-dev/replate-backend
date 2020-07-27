@@ -10,10 +10,11 @@ router.use('/', tokenAuth);
 
 router.post('/', (req, res) => {
 	if (req.decodedToken.accountType === 'business') {
-		if (req.body.foodType && req.body.preferredPickupTime) {
+		if (req.body.foodType && req.body.amount && req.body.preferredPickupTime) {
 			db.newPickupRequest({
 				businessAccountID: req.decodedToken.userID,
 				foodType: req.body.foodType,
+				amount: req.body.amount,
 				preferredPickupTime: req.body.preferredPickupTime,
 			})
 				.then((returned) => {
@@ -25,7 +26,7 @@ router.post('/', (req, res) => {
 		} else {
 			res
 				.status(400)
-				.json({ message: 'Provide a foodType and preferredPickupTime.' });
+				.json({ message: 'Provide a foodType, amount and preferredPickupTime.' });
 		}
 	} else {
 		res.status(401).json({
@@ -46,14 +47,15 @@ router.get('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
 	if (req.decodedToken.accountType === 'business') {
-		if (req.body.foodType && req.body.preferredPickupTime) {
-			//Check if the business created the pickup request before allowing them to update it
+		if (req.body) {
+			//Checks if the business created the pickup request before allowing them to update it
 			db.findPickupById(req.params.id)
 				.then((found) => {
 					if (found.businessAccountID === req.decodedToken.userID) {
 						db.updatePickupRequest(req.params.id, {
 							foodType: req.body.foodType,
-							preferredPickupTime: req.body.preferredPickupTime,
+							amount: req.body.amount,
+							preferredPickupTime: req.body.preferredPickupTime
 						})
 							.then((returned) => {
 								res.status(200).json({
@@ -79,7 +81,7 @@ router.put('/:id', (req, res) => {
 		} else {
 			res
 				.status(400)
-				.json({ message: 'Provide a foodType and preferredPickupTime.' });
+				.json({ message: 'Provide a foodType, amount and preferredPickupTime.' });
 		}
 	} else if (req.decodedToken.accountType === 'volunteer') {
 		if (req.body.assign === true) {
@@ -92,7 +94,7 @@ router.put('/:id', (req, res) => {
 				.catch((err) => {
 					res.status(500).json({ message: 'Server error', error: err });
 				});
-		} else if (req.body.assign === false) {
+		} else if (req.body.assign === false) { //Add a check to see if they're even the assigned volunteer first
 			db.updatePickupRequest(req.params.id, {
 				volunteerAccountID: null,
 			})

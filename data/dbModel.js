@@ -8,7 +8,7 @@ const newVolunteerAccount = (obj) => {
 
 const findVolByUsername = (username) => {
 	return db
-		.column('username', 'phoneNumber', 'volunteerName')
+		.column('id', 'username', 'phoneNumber', 'volunteerName')
 		.from('volunteerAccounts')
 		.where({ username })
 		.first();
@@ -16,7 +16,7 @@ const findVolByUsername = (username) => {
 
 const findAllVolunteers = () => {
 	return db
-		.column('username', 'phoneNumber', 'volunteerName')
+		.column('id', 'username', 'phoneNumber', 'volunteerName')
 		.from('volunteerAccounts');
 };
 
@@ -38,7 +38,7 @@ const newBusinessAccount = (obj) => {
 
 const findBizByUsername = (username) => {
 	return db
-		.column('username', 'phoneNumber', 'businessName', 'businessAddress')
+		.column('id', 'username', 'phoneNumber', 'businessName', 'businessAddress')
 		.from('businessAccounts')
 		.where({ username })
 		.first();
@@ -46,7 +46,7 @@ const findBizByUsername = (username) => {
 
 const findAllBusinesses = () => {
 	return db
-		.column('username', 'phoneNumber', 'businessName', 'businessAddress')
+		.column('id', 'username', 'phoneNumber', 'businessName', 'businessAddress')
 		.from('businessAccounts');
 };
 
