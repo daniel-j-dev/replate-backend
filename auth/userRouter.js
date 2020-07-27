@@ -248,6 +248,42 @@ router.put('/volunteer/:username', (req, res) => {
 
 //Delete
 
+router.delete('/business/:username', (req, res) => {
+	if (
+		req.decodedToken.username === req.params.username &&
+		req.decodedToken.accountType === 'business'
+	) {
+		db.deleteBusinessAccount(req.decodedToken.username).then(returned => {
+			res.status(200).json({message: 'Account deleted.'});
+		}).catch(err => {
+			res.status(500).json({message: 'Server error', error: err});
+		});
+	} else {
+		res.status(401).json({
+			message: 'You do not have authorization to delete this account.',
+		});
+	}
+});
+
+router.delete('/volunteer/:username', (req, res) => {
+	if (
+		req.decodedToken.username === req.params.username &&
+		req.decodedToken.accountType === 'volunteer'
+	) {
+		db.deleteVolunteerAccount(req.decodedToken.username)
+			.then((returned) => {
+				res.status(200).json({ message: 'Account deleted.' });
+			})
+			.catch((err) => {
+				res.status(500).json({ message: 'Server error', error: err });
+			});
+	} else {
+		res.status(401).json({
+			message: 'You do not have authorization to delete this account.',
+		});
+	}
+});
+
 //Login
 
 router.post('/login', (req, res) => {

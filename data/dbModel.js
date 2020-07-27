@@ -20,6 +20,16 @@ const findAllVolunteers = () => {
 		.from('volunteerAccounts');
 };
 
+const updateVolunteer = (currentUsername, obj) => {
+	return db('volunteerAccounts')
+		.where({ username: currentUsername })
+		.update(obj);
+};
+
+const deleteVolunteerAccount = (username) => {
+	return db('volunteerAccounts').where({ username: username }).del();
+};
+
 //Business CRUD Model
 
 const newBusinessAccount = (obj) => {
@@ -46,10 +56,8 @@ const updateBusiness = (currentUsername, obj) => {
 		.update(obj);
 };
 
-const updateVolunteer = (currentUsername, obj) => {
-	return db('volunteerAccounts')
-		.where({ username: currentUsername })
-		.update(obj);
+const deleteBusinessAccount = (username) => {
+	return db('businessAccounts').where({ username: username }).del();
 };
 
 //Dangerous reads - returns entries with hashed passwords
@@ -73,4 +81,6 @@ module.exports = {
 	findBizPasswordByUsername,
 	updateBusiness,
 	updateVolunteer,
+	deleteBusinessAccount,
+	deleteVolunteerAccount,
 };
