@@ -1,5 +1,3 @@
-const { table } = require('console');
-
 exports.up = function (knex) {
 	return knex.schema
 		.createTable('volunteerAccounts', (tbl) => {
@@ -21,7 +19,6 @@ exports.up = function (knex) {
 			tbl.increments();
 			tbl
 				.integer('businessAccountID')
-				.unique()
 				.notNullable()
 				.references('id')
 				.inTable('businessAccounts')
@@ -35,7 +32,7 @@ exports.up = function (knex) {
 				.references('id')
 				.inTable('volunteerAccounts')
 				.onUpdate('CASCADE')
-				.onDelete('CASCADE');
+				.onDelete('SET NULL');
 		});
 };
 
