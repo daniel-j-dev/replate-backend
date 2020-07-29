@@ -88,6 +88,10 @@ const updatePickupRequest = (id, obj) => {
 	return db('pickupRequests').where({ id: id }).update(obj);
 };
 
+const updatePickupRequestsByVolID = (volID, obj) => {
+	return db('pickupRequests').where({ volunteerAccountID: volID }).update(obj);
+};
+
 const deletePickupRequest = (id) => {
 	return db('pickupRequests').where({id: id}).del()
 }
@@ -108,6 +112,7 @@ module.exports = {
 	newPickupRequest,
 	findAllPickupRequests,
 	updatePickupRequest,
+	updatePickupRequestsByVolID,
 	findPickupById,
 	deletePickupRequest,
 };

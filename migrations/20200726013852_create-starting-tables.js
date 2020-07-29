@@ -1,3 +1,6 @@
+
+//Added "status" column to pickupRequests table afterwards with SQLite Studio
+
 exports.up = function (knex) {
 	return knex.schema
 		.createTable('volunteerAccounts', (tbl) => {

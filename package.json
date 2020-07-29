@@ -8,13 +8,16 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "jest": "^26.1.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.21.2",
     "nodemon": "^2.0.4",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "^5.0.0",
+    "supertest": "^4.0.2"
   },
   "devDependencies": {},
   "scripts": {
+    "test": "jest --watchAll",
     "start": "node server.js",
     "server": "nodemon server.js"
   },
