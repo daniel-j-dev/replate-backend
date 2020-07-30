@@ -19,8 +19,8 @@ server.use(express.json());
 server.use('/', userRouter);
 server.use('/pickup', pickupRequestsRouter);
 
-// server.listen(port, () => {
-// 	console.log(`Server started on port ${port}`);
-// });
+server.listen(port, () => {
+	console.log(`Server started on port ${port}`);
+});
 
 module.exports = server;

@@ -21,7 +21,9 @@ router.post('/', (req, res) => {
 				preferredPickupTime: req.body.preferredPickupTime,
 			})
 				.then((returned) => {
-					res.status(201).json({ message: 'Pickup request created!' });
+					res
+						.status(201)
+						.json({ message: 'Pickup request created!', id: returned });
 				})
 				.catch((err) => {
 					res.status(500).json({ message: 'Server error', error: err.message });
@@ -61,8 +63,16 @@ router.put('/:id', (req, res) => {
 							preferredPickupTime: req.body.preferredPickupTime,
 						})
 							.then((returned) => {
-								res.status(200).json({
-									message: 'Pickup request updated!',
+								// res.status(200).json({
+								// 	message: 'Pickup request updated!',
+								// 	updatedPickup: returned
+								// });
+
+								db.findPickupById(req.params.id).then((returned) => {
+									res.status(200).json({
+										message: 'Pickup request updated!',
+										updatedPickup: returned,
+									});
 								});
 							})
 							.catch((err) => {
@@ -185,7 +195,10 @@ router.delete('/:id', (req, res) => {
 							});
 						});
 				} else {
-					res.status(401).json({ message: 'You do not have authorization to delete this pickup request.' });
+					res.status(401).json({
+						message:
+							'You do not have authorization to delete this pickup request.',
+					});
 				}
 			})
 			.catch((err) => {
