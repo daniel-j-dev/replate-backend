@@ -17,7 +17,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "jest --watchAll",
+    "test": "jest --forceExit --detectOpenHandles  --watchAll --maxWorkers=1",
     "start": "node server.js",
     "server": "nodemon server.js"
   },
