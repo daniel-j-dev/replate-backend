@@ -339,7 +339,7 @@ router.post('/login', (req, res) => {
 		} else {
 			res
 				.status(400)
-				.json({ message: 'Provice an accountType of business or volunteer.' });
+				.json({ message: 'Provide an accountType of business or volunteer.' });
 		}
 	} else {
 		res.status(400).json({ message: 'Provide a username and password.' });
