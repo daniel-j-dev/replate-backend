@@ -57,7 +57,7 @@ router.post('/register', (req, res) => {
 				.catch((err) => {
 					res.status(500).json({
 						message: 'Server error - does the username already exists?',
-						error: err,
+						error: err.message,
 					});
 				});
 		} else {
@@ -86,7 +86,7 @@ router.post('/register', (req, res) => {
 				.catch((err) => {
 					res.status(500).json({
 						message: 'Server error - does the username already exists?',
-						error: err,
+						error: err.message,
 					});
 				});
 		} else {
@@ -113,7 +113,7 @@ router.get('/business/:username', (req, res) => {
 			}
 		})
 		.catch((err) => {
-			res.status(500).json({ message: 'Server error', error: err });
+			res.status(500).json({ message: 'Server error', error: err.message });
 		});
 });
 
@@ -127,7 +127,7 @@ router.get('/volunteer/:username', (req, res) => {
 			}
 		})
 		.catch((err) => {
-			res.status(500).json({ message: 'Server error', error: err });
+			res.status(500).json({ message: 'Server error', error: err.message });
 		});
 });
 
@@ -141,7 +141,7 @@ router.get('/volunteer/', (req, res) => {
 			}
 		})
 		.catch((err) => {
-			res.status(500).json({ message: 'Server error', error: err });
+			res.status(500).json({ message: 'Server error', error: err.message });
 		});
 });
 
@@ -155,7 +155,7 @@ router.get('/business/', (req, res) => {
 			}
 		})
 		.catch((err) => {
-			res.status(500).json({ message: 'Server error', error: err });
+			res.status(500).json({ message: 'Server error', error: err.message });
 		});
 });
 
@@ -176,7 +176,7 @@ router.put('/business/:username', (req, res) => {
 					res.json({ message: 'Account updated!' });
 				})
 				.catch((err) => {
-					res.status(500).json({ message: 'Server error', error: err });
+					res.status(500).json({ message: 'Server error', error: err.message });
 				});
 		} else {
 			res.status(401).json({
@@ -193,7 +193,7 @@ router.put('/business/:username', (req, res) => {
 					res.json({ message: 'Account updated!' });
 				})
 				.catch((err) => {
-					res.status(500).json({ message: 'Server error', error: err });
+					res.status(500).json({ message: 'Server error', error: err.message });
 				});
 		} else {
 			res.status(401).json({
@@ -218,7 +218,7 @@ router.put('/volunteer/:username', (req, res) => {
 					res.json({ message: 'Account updated!' });
 				})
 				.catch((err) => {
-					res.status(500).json({ message: 'Server error', error: err });
+					res.status(500).json({ message: 'Server error', error: err.message });
 				});
 		} else {
 			res.status(401).json({
@@ -235,7 +235,7 @@ router.put('/volunteer/:username', (req, res) => {
 					res.json({ message: 'Account updated!' });
 				})
 				.catch((err) => {
-					res.status(500).json({ message: 'Server error', error: err });
+					res.status(500).json({ message: 'Server error', error: err.message });
 				});
 		} else {
 			res.status(401).json({
@@ -252,11 +252,13 @@ router.delete('/business/:username', (req, res) => {
 		req.decodedToken.username === req.params.username &&
 		req.decodedToken.accountType === 'business'
 	) {
-		db.deleteBusinessAccount(req.decodedToken.username).then(returned => {
-			res.status(200).json({message: 'Account deleted.'});
-		}).catch(err => {
-			res.status(500).json({message: 'Server error', error: err});
-		});
+		db.deleteBusinessAccount(req.decodedToken.username)
+			.then((returned) => {
+				res.status(200).json({ message: 'Account deleted.' });
+			})
+			.catch((err) => {
+				res.status(500).json({ message: 'Server error', error: err.message });
+			});
 	} else {
 		res.status(401).json({
 			message: 'You do not have authorization to delete this account.',
@@ -269,12 +271,21 @@ router.delete('/volunteer/:username', (req, res) => {
 		req.decodedToken.username === req.params.username &&
 		req.decodedToken.accountType === 'volunteer'
 	) {
-		db.deleteVolunteerAccount(req.decodedToken.username)
-			.then((returned) => {
-				res.status(200).json({ message: 'Account deleted.' });
+		//Sets pickup requests assigned to this user to 'Pending' then deletes the user
+		db.updatePickupRequestsByVolID(req.decodedToken.userID, {
+			volunteerAccountID: null,
+			status: 'Pending',
+		})
+			.then(() => {
+				db.deleteVolunteerAccount(req.params.username).then(() => {
+					res.status(200).json({
+						message:
+							'Deleted account and set their assigned pickup requests to Unassigned.',
+					});
+				});
 			})
 			.catch((err) => {
-				res.status(500).json({ message: 'Server error', error: err });
+				res.status(500).json({ message: 'Server error', error: err.message });
 			});
 	} else {
 		res.status(401).json({
@@ -304,7 +315,7 @@ router.post('/login', (req, res) => {
 					}
 				})
 				.catch((err) => {
-					res.status(500).json({ message: 'Server error', error: err });
+					res.status(500).json({ message: 'Server error', error: err.message });
 				});
 		} else if (req.body.accountType === 'volunteer') {
 			db.findVolPasswordByUsername(req.body.username)
@@ -323,12 +334,12 @@ router.post('/login', (req, res) => {
 					}
 				})
 				.catch((err) => {
-					res.status(500).json({ message: 'Server error', error: err });
+					res.status(500).json({ message: 'Server error', error: err.message });
 				});
 		} else {
 			res
 				.status(400)
-				.json({ message: 'Provice an accountType of business or volunteer.' });
+				.json({ message: 'Provide an accountType of business or volunteer.' });
 		}
 	} else {
 		res.status(400).json({ message: 'Provide a username and password.' });

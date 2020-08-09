@@ -1,6 +1,8 @@
 //Imports
+require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors');
 const userRouter = require('./auth/userRouter.js');
 const pickupRequestsRouter = require('./auth/pickupRequestsRouter.js');
 
@@ -8,16 +10,17 @@ const pickupRequestsRouter = require('./auth/pickupRequestsRouter.js');
 
 const server = express();
 
-const PORT = 8000;
+const port = process.env.PORT;
 
 //Middleware
 
+server.use(cors());
 server.use(express.json());
 server.use('/', userRouter);
 server.use('/pickup', pickupRequestsRouter);
 
-//Start server
-
-server.listen(PORT, () => {
-	console.log(`Server started on port ${PORT}`);
+server.listen(port, () => {
+	console.log(`Server started on port ${port}`);
 });
+
+module.exports = server;

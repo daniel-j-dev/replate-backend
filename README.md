@@ -22,5 +22,5 @@ Endpoint | Method | Description | Required Data
 --- | --- | --- | ---
 /pickup | POST | Creates a pickup request. Must be logged into a business account. | `foodType, amount, preferredPickupTime`
 /pickup | GET | Returns all pickup requests. Must be logged into a business or volunteer account. | 
-/pickup/id | PUT | Updates a pickup request. Must be signed into the business account that created it or a volunteer. Request from a volunteer's account will add or remove them from as the assigned volunteer depending on the data sent. | None required. Provide what you want to change. <br>Business: `foodType, amount, preferredPickupTime` <br><br> Volunteer: `assign (boolean)`
-/pickup/id | DELETE | Deletes a pickup request. Must be signed in as the business that created it or as the volunteer assigned to it.
+/pickup/id | PUT | Updates a pickup request. Must be signed into the business account that created it or a volunteer. As a volunteer, set status to Assigned to be assigned to it. Setting the status to Pending or Complete requires the volunteer is already assigned to the pickup. | None required. Provide what you want to change. <br>Business: `foodType, amount, preferredPickupTime` <br><br> Volunteer: `status (Pending, Assigned or Complete)`
+/pickup/id | DELETE | Deletes a pickup request. Must be signed in as the business that created it. The pickup request can't be deleted if it's status is Complete.
